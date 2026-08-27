@@ -1,5 +1,5 @@
-public import Algebra_Monoid_Primitives
-public import Store_Reduction_Primitives
+public import Algebra_Monoid
+public import Store_Reduction
 
 extension Store.Runtime {
 

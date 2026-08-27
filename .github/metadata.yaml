@@ -1,7 +1,7 @@
 # .github/metadata.yaml
 description: "Isolation-generic store runtime for Swift with an explicit feature lifecycle and typed inter-feature communication."
 topics:
-  - foundations
+  - compositions
   - stores
   - state
 homepage: "https://swift-institute.org"

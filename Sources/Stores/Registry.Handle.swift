@@ -1,4 +1,4 @@
-internal import Tree_Keyed_Primitives
+internal import Tree_Keyed
 
 extension Registry {
 

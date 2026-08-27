@@ -84,7 +84,7 @@ try await store.finish()   // fails if any work is still in flight
 ## Installation
 
 ```swift
-.package(url: "https://github.com/swift-foundations/swift-stores.git", branch: "main")
+.package(url: "https://github.com/swift-compositions/swift-stores.git", branch: "main")
 ```
 
 ## Design attribution

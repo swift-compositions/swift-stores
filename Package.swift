@@ -23,63 +23,63 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-store-primitives.git",
+            url: "https://github.com/swift-molecules/swift-store.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-tree-keyed-primitives.git",
+            url: "https://github.com/swift-molecules/swift-tree-keyed.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-deque-primitives.git",
+            url: "https://github.com/swift-molecules/swift-deque.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-queue-primitives.git",
+            url: "https://github.com/swift-molecules/swift-queue.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-dictionary-primitives.git",
+            url: "https://github.com/swift-molecules/swift-dictionary.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-dictionary-ordered-primitives.git",
+            url: "https://github.com/swift-molecules/swift-dictionary-ordered.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-hash-primitives.git",
+            url: "https://github.com/swift-molecules/swift-hash.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-algebra-primitives.git",
+            url: "https://github.com/swift-molecules/swift-algebra.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-foundations/swift-effects.git", branch: "main"),
+        .package(url: "https://github.com/swift-compositions/swift-effects.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-foundations/swift-observations.git",
+            url: "https://github.com/swift-compositions/swift-observations.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-foundations/swift-dependencies.git",
+            url: "https://github.com/swift-compositions/swift-dependencies.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-foundations/swift-clocks.git", branch: "main"),
+        .package(url: "https://github.com/swift-compositions/swift-clocks.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "Stores",
             dependencies: [
-                .product(name: "Store Reduction Primitives", package: "swift-store-primitives"),
-                .product(name: "Tree Keyed Primitives", package: "swift-tree-keyed-primitives"),
-                .product(name: "Deque Primitives", package: "swift-deque-primitives"),
-                .product(name: "Queue Primitive", package: "swift-queue-primitives"),
-                .product(name: "Dictionary Primitive", package: "swift-dictionary-primitives"),
+                .product(name: "Store Reduction", package: "swift-store"),
+                .product(name: "Tree Keyed", package: "swift-tree-keyed"),
+                .product(name: "Deque", package: "swift-deque"),
+                .product(name: "Queue Primitive", package: "swift-queue"),
+                .product(name: "Dictionary Primitive", package: "swift-dictionary"),
                 .product(
-                    name: "Dictionary Ordered Primitives",
-                    package: "swift-dictionary-ordered-primitives"
+                    name: "Dictionary Ordered",
+                    package: "swift-dictionary-ordered"
                 ),
-                .product(name: "Hash Primitives", package: "swift-hash-primitives"),
-                .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
+                .product(name: "Hash", package: "swift-hash"),
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Observations", package: "swift-observations"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
@@ -89,7 +89,7 @@ let package = Package(
             name: "Stores Testing",
             dependencies: [
                 "Stores",
-                .product(name: "Store Reduction Primitives", package: "swift-store-primitives"),
+                .product(name: "Store Reduction", package: "swift-store"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Clocks", package: "swift-clocks"),
             ]
@@ -99,7 +99,7 @@ let package = Package(
             dependencies: [
                 "Stores",
                 "Stores Testing",
-                .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
             ]
         ),
         .testTarget(

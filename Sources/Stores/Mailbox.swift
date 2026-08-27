@@ -1,4 +1,4 @@
-internal import Deque_Primitives
+internal import Deque
 internal import Queue_Primitive
 
 struct Mailbox<Element: Sendable>: ~Copyable {

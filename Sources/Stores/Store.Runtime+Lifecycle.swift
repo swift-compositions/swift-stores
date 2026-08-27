@@ -1,4 +1,4 @@
-public import Store_Reduction_Primitives
+public import Store_Reduction
 
 extension Store.Runtime {
 
