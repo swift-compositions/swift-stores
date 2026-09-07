@@ -79,7 +79,7 @@ let package = Package(
                     package: "swift-dictionary-ordered"
                 ),
                 .product(name: "Hash", package: "swift-hash"),
-                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Algebra", package: "swift-algebra"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Observations", package: "swift-observations"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
@@ -99,7 +99,7 @@ let package = Package(
             dependencies: [
                 "Stores",
                 "Stores Testing",
-                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Algebra", package: "swift-algebra"),
             ]
         ),
         .testTarget(

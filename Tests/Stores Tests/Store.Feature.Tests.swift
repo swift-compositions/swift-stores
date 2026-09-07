@@ -1,4 +1,4 @@
-import Algebra_Monoid
+import Algebra
 import Synchronization
 import Testing
 

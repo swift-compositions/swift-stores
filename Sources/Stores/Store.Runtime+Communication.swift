@@ -1,4 +1,4 @@
-public import Algebra_Monoid
+public import Algebra
 public import Store_Reduction
 
 extension Store.Runtime {
