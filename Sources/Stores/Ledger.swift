@@ -1,6 +1,5 @@
 internal import Dictionary_Ordered
 internal import Dictionary_Primitive
-internal import Hash
 
 struct Ledger<Value: Sendable>: ~Copyable {
     private var storage: Dictionary_Primitive.Dictionary<Ticket, Value>.Ordered

@@ -47,10 +47,6 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-hash.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-molecules/swift-algebra.git",
             branch: "main"
         ),
@@ -78,7 +74,6 @@ let package = Package(
                     name: "Dictionary Ordered",
                     package: "swift-dictionary-ordered"
                 ),
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Algebra", package: "swift-algebra"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Observations", package: "swift-observations"),
