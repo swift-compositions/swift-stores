@@ -62,11 +62,11 @@ let package = Package(
         .target(
             name: "Stores",
             dependencies: [
-                .product(name: "Store Reduction", package: "swift-store"),
+                .product(name: "Store", package: "swift-store"),
                 .product(name: "Tree Keyed", package: "swift-tree-keyed"),
                 .product(name: "Deque", package: "swift-deque"),
                 .product(name: "Queue Primitive", package: "swift-queue"),
-                .product(name: "Dictionary Primitive", package: "swift-dictionary"),
+                .product(name: "Dictionary", package: "swift-dictionary"),
                 .product(
                     name: "Dictionary Ordered",
                     package: "swift-dictionary-ordered"
@@ -81,7 +81,7 @@ let package = Package(
             name: "Stores Testing",
             dependencies: [
                 "Stores",
-                .product(name: "Store Reduction", package: "swift-store"),
+                .product(name: "Store", package: "swift-store"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Clocks", package: "swift-clocks"),
             ]

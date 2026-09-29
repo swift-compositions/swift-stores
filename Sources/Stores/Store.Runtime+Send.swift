@@ -1,5 +1,5 @@
 internal import Effects
-public import Store_Reduction
+public import Store
 
 extension Store.Runtime {
 

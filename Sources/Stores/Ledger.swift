@@ -1,11 +1,11 @@
 internal import Dictionary_Ordered
-internal import Dictionary_Primitive
+internal import Dictionary
 
 struct Ledger<Value: Sendable>: ~Copyable {
-    private var storage: Dictionary_Primitive.Dictionary<Ticket, Value>.Ordered
+    private var storage: Dictionary::Dictionary<Ticket, Value>.Ordered
 
     init() {
-        self.storage = Dictionary_Primitive.Dictionary<Ticket, Value>.Ordered()
+        self.storage = Dictionary::Dictionary<Ticket, Value>.Ordered()
     }
 }
 

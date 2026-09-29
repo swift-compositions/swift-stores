@@ -1,5 +1,5 @@
 public import Observations
-public import Store_Reduction
+public import Store
 
 extension Store {
 
