@@ -22,20 +22,17 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/swift-molecules/swift-store.git",
-            branch: "main"
-        ),
+        .package(url: "https://github.com/swift-atoms/swift-store.git", branch: "main", traits: ["Algebra"]),
         .package(
             url: "https://github.com/swift-molecules/swift-tree-keyed.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-deque.git",
+            url: "https://github.com/swift-atoms/swift-deque.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-queue.git",
+            url: "https://github.com/swift-atoms/swift-queue.git",
             branch: "main"
         ),
         .package(
@@ -47,7 +44,7 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-algebra.git",
+            url: "https://github.com/swift-atoms/swift-algebra.git",
             branch: "main"
         ),
         .package(url: "https://github.com/swift-compositions/swift-effects.git", branch: "main"),
