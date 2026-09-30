@@ -12,7 +12,7 @@ extension Registry {
 }
 
 extension Registry.Mounts {
-    typealias Storage = Tree<Node>.Keyed<String>
+    typealias Storage = __Tree<TreeStorage.Keyed<Node, String>>
 }
 
 extension Registry.Mounts {

@@ -22,12 +22,12 @@ extension Store.Scope {
 extension Store.Scope {
 
     func run<T, E: Swift.Error>(_ operation: () throws(E) -> T) throws(E) -> T {
-        try withDependencies(apply, operation: operation)
+        try withDependencies({ (values: inout Dependency.Values) throws(E) in apply(&values) }, operation: operation)
     }
 
     func run<T, E: Swift.Error>(
         _ operation: nonisolated(nonsending) () async throws(E) -> T
     ) async throws(E) -> T {
-        try await withDependencies(apply, operation: operation)
+        try await withDependencies({ (values: inout Dependency.Values) throws(E) in apply(&values) }, operation: operation)
     }
 }
