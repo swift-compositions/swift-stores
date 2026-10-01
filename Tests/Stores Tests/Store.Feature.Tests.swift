@@ -377,3 +377,18 @@ extension Store.Feature.Test.Order {
         lock.withLock { $0 }
     }
 }
+
+extension Store.Feature.Test.`Edge Case` {
+    @Test func `supplying through a handle held past a dismount is refused and does not reach the replacement`() throws {
+        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let root = try runtime.mountRoot()
+        let first = try runtime.mount("detail", under: root)
+        try runtime.dismount(first)
+        let second = try runtime.mount("detail", under: root)
+
+        #expect(throws: Store.Error.notMounted) {
+            try runtime.supply(Store.Feature.Test.Theme.self, "dark", at: first)
+        }
+        #expect(runtime.value(Store.Feature.Test.Theme.self, at: second) == "system")
+    }
+}
