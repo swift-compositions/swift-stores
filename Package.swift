@@ -56,7 +56,7 @@ let package = Package(
             url: "https://github.com/swift-compositions/swift-dependencies.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-compositions/swift-clocks.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-clock.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -83,7 +83,7 @@ let package = Package(
                 "Stores",
                 .product(name: "Store", package: "swift-store"),
                 .product(name: "Effects", package: "swift-effects"),
-                .product(name: "Clocks", package: "swift-clocks"),
+                .product(name: "Clock Concurrency", package: "swift-clock"),
             ]
         ),
         .testTarget(
@@ -99,7 +99,7 @@ let package = Package(
             dependencies: [
                 "Stores",
                 "Stores Testing",
-                .product(name: "Clocks", package: "swift-clocks"),
+                .product(name: "Clock Concurrency", package: "swift-clock"),
             ]
         ),
     ],

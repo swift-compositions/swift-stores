@@ -1,4 +1,4 @@
-public import Clocks
+public import Clock_Concurrency
 public import Stores
 
 extension Store.Test {
