@@ -6,8 +6,7 @@ extension Store.Job {
     public struct Handler: Effects.Effect.Handler.`Protocol`, Sendable {
         let run: @Sendable (@escaping @Sendable () async -> Void) async -> Void
 
-        public init(_ run: @escaping @Sendable (@escaping @Sendable () async -> Void) async -> Void)
-        {
+        public init(_ run: @escaping @Sendable (@escaping @Sendable () async -> Void) async -> Void) {
             self.run = run
         }
     }

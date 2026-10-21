@@ -145,8 +145,7 @@ extension Store.Feature.Test.Unit {
 }
 
 extension Store.Feature.Test.`Edge Case` {
-    @Test func `a handle held past a dismount resolves to nothing, not to its replacement`() throws
-    {
+    @Test func `a handle held past a dismount resolves to nothing, not to its replacement`() throws {
         let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
         let root = try runtime.mountRoot()
 

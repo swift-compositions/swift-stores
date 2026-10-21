@@ -40,8 +40,7 @@ extension Store.Test {
         return "\n" + lines.joined(separator: "\n")
     }
 
-    private static func render(_ node: Store.View.Node, path: [String], into lines: inout [String])
-    {
+    private static func render(_ node: Store.View.Node, path: [String], into lines: inout [String]) {
         let prefix = path.isEmpty ? "" : path.joined(separator: ".") + "."
         for field in node.fields {
             lines.append("  \(prefix)\(field.name) = \(field.value)")

@@ -7,8 +7,7 @@ extension Store.Runtime {
         _ key: K.Type,
         at handle: Store.Feature.Handle
     ) -> K.Value {
-        if let mount = _features.node(at: handle.registry), let value = mount.values.value(for: key)
-        {
+        if let mount = _features.node(at: handle.registry), let value = mount.values.value(for: key) {
             return value
         }
         for ancestor in _features.ancestors(of: handle.registry) {
