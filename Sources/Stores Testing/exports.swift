@@ -1,1 +1,3 @@
-@_exported public import Stores
+#if StoresTesting
+    @_exported public import Stores
+#endif

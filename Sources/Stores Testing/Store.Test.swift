@@ -1,6 +1,8 @@
-public import Stores
+#if StoresTesting
+    public import Stores
 
-extension Store {
+    extension Store {
 
-    public enum Test {}
-}
+        public enum Test {}
+    }
+#endif

@@ -58,6 +58,9 @@ let package = Package(
         ),
         .package(url: "https://github.com/swift-atoms/swift-clock.git", branch: "main"),
     ],
+    traits: [
+        .trait(name: "StoresTesting", description: "Stores Testing and the dependencies only it needs"),
+    ],
     targets: [
         .target(
             name: "Stores",
@@ -83,7 +86,7 @@ let package = Package(
                 "Stores",
                 .product(name: "Store", package: "swift-store"),
                 .product(name: "Effects", package: "swift-effects"),
-                .product(name: "Clock Concurrency", package: "swift-clock"),
+                .product(name: "Clock Concurrency", package: "swift-clock", condition: .when(traits: ["StoresTesting"])),
             ]
         ),
         .testTarget(
