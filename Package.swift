@@ -21,6 +21,9 @@ let package = Package(
             targets: ["Stores Testing"]
         ),
     ],
+    traits: [
+        .trait(name: "StoresTesting", description: "Stores Testing and the dependencies only it needs"),
+    ],
     dependencies: [
         .package(url: "https://github.com/swift-atoms/swift-store.git", branch: "main", traits: ["Algebra"]),
         .package(
@@ -57,9 +60,6 @@ let package = Package(
             branch: "main"
         ),
         .package(url: "https://github.com/swift-atoms/swift-clock.git", branch: "main"),
-    ],
-    traits: [
-        .trait(name: "StoresTesting", description: "Stores Testing and the dependencies only it needs"),
     ],
     targets: [
         .target(
