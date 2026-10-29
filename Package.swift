@@ -22,7 +22,7 @@ let package = Package(
         ),
     ],
     traits: [
-        .trait(name: "StoresTesting", description: "Stores Testing and the dependencies only it needs"),
+        .trait(name: "StoresTesting", description: "Stores Testing and the dependencies only it needs")
     ],
     dependencies: [
         .package(url: "https://github.com/swift-atoms/swift-store.git", branch: "main", traits: ["Algebra"]),
