@@ -65,7 +65,7 @@
 
             isolation: isolated (any Actor)? = #isolation
         ) async {
-            clock.advance(by: duration)
+            await clock.advance(by: duration)
             await settle(isolation: isolation)
         }
 
