@@ -1,96 +1,20 @@
 # swift-stores
 
-![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+Use this package when you hold application state that changes only through actions, start async work from those changes, and mount features into a tree that talk to each other without naming each other. Start from `Store.Runtime`, create it on the actor or isolation the state should live on, and mount features with `Store.Runtime.mountRoot(_:)` and `Store.Runtime.mount(_:under:_:)`. To test a store step by step against a rendered view, use `Store.Test.Runtime` from Stores Testing. If you only need the update, effect and key vocabulary without a runtime, use swift-store.
 
-An isolation-generic store runtime for Swift — state advanced by actions, an explicit feature lifecycle you can put a breakpoint on, typed communication between features that never name each other, and tests that assert against a derived view instead of demanding `Equatable` state.
+## Laws
 
-## Key Features
-
-- **Isolation-generic, main actor as a specialization** — a runtime captures the isolation it was created on and returns to it. Created on the main actor it is main-actor isolated; created inside an actor it is isolated to that actor. Nothing here assumes a user interface exists.
-- **Mount and dismount are API** — features appear and disappear at call sites, not by reflection over state and not because some optional became `nil`. A handle held past a dismount resolves to nothing rather than to whatever was mounted there next.
-- **Typed communication in both directions** — values and commands travel down, events bubble up with consume-or-transform, and contributions aggregate upward under a monoid. Neither participant names the other, and no traffic is matched by string.
-- **Per-subtree runtimes** — a spawned subtree runs its own state on its own runtime and opts out of the parent's action routing, so sending to it does not cost more for being deep in a tree. The parent keeps the lifecycle.
-- **Execution belongs to the effect owner** — the runtime decides when work starts and stops; how a body is performed is a swappable handler, which is what makes a test a handler swap rather than a different runtime.
-
-## Quick Start
-
-```swift
-import Stores
-
-enum Action: Sendable { case increment, load, loaded(Int) }
-
-let update = Store.Update<Int, Action, Store.Work<Action>> { count, action in
-    switch action {
-    case .increment:
-        count += 1
-        return .none
-    case .load:
-        return .run(Store.Work(cancellation: "load") { send in
-            await send(.loaded(41))
-        })
-    case .loaded(let value):
-        count = value
-        return .send(.increment)
-    }
-}
-
-@MainActor
-func run() {
-    let runtime = Store.Runtime(state: 0, update: update)  // main-actor isolated
-    runtime.send(.increment)                                // state == 1
-}
-```
-
-## Features and communication
-
-A feature is a named position. What it offers the rest of the tree is stated where it is mounted:
-
-```swift
-enum Theme: Store.Key.`Protocol` {
-    static var initial: Palette { .system }
-}
-
-let root = try runtime.mountRoot { $0.supply(Theme.self, .dark) }
-let detail = try runtime.mount("detail", under: root) { mount in
-    mount.on(Saved.self) { _ in .consumed }
-    mount.onDismount { subscription.cancel() }
-}
-
-runtime.value(Theme.self, at: detail)   // .dark — resolved from an ancestor
-runtime.raise(Saved(id: 7), from: detail)
-try runtime.dismount(detail)            // teardown runs deepest first
-```
-
-A command needs no separate machinery: it is a value whose type is a function, so the same key mechanism carries it, and the key's initial value doubles as the neutral behaviour.
-
-## Testing
-
-Tests assert against a rendered view. State needs no `Equatable`, failures name the field that differed, and fields that legitimately vary run to run are withheld once rather than worked around at every assertion:
-
-```swift
-import Stores_Testing
-
-let store = Store.Test.Runtime(
-    state: 0,
-    update: update,
-    redacting: .withholding("loadedAt"),
-    projection: { count in .init(fields: [.init("count", "\(count)")]) }
-)
-
-try store.send(.increment, becoming: .init(fields: [.init("count", "1")]))
-try await store.finish()   // fails if any work is still in flight
-```
-
-## Installation
-
-```swift
-.package(url: "https://github.com/swift-compositions/swift-stores.git", branch: "main")
-```
-
-## Design attribution
-
-An independent implementation in the Elm lineage. The vocabulary of a store advanced by actions descends from Elm and Redux. Effects returned from a reduction as data, and a test store that asserts step by step, are prior art visible in the MIT-licensed swift-composable-architecture and its public 2.0 beta. No code or API surface from any of those is reproduced here.
-
-## License
-
-Apache License 2.0. See [LICENSE.md](LICENSE.md).
+- `Store.Runtime.send(_:)` reduces before it returns. Actions are reduced in the order sent. An action sent while reducing, or returned as a send effect, is reduced in the same call, so it leaves no work in flight.
+- Each run, merge or sequence effect that `update` returns starts one task. A merge runs its parts at the same time and a sequence runs them in order. Actions sent from work return to the runtime's isolation.
+- Only a run effect at the top of what `update` returns is tracked by its cancellation ID. Work nested in a merge or sequence has no ID, so `Store.Runtime.cancel(_:)` can't reach it and it isn't named in `Store.Runtime.inFlight`.
+- Starting work never cancels earlier work with the same ID. `Store.Runtime.cancel(_:)` cancels every in-flight work with that ID and drops it from the runtime at once.
+- A runtime is settled when no action is waiting and no work is in flight.
+- Work bodies run through the `Store.Job.Handler` dependency, which runs them inline unless overridden. `update` runs inside the runtime's `Store.Scope`.
+- A runtime has one root feature, and sibling names are unique. A handle kept after its feature is dismounted never resolves to a later feature mounted at the same place. Supplying or dismounting through it fails as not mounted.
+- Dismounting a feature removes its whole subtree. Teardowns run deepest first, and in reverse order of registration within a feature.
+- `Store.Runtime.value(_:at:)` reads the feature itself, then the nearest ancestor that supplied the key, then the key's initial value.
+- `Store.Runtime.aggregate(_:from:)` combines the contributions of the feature and its whole subtree, level by level, under the key's monoid. With no contributions it is the monoid's identity.
+- `Store.Runtime.raise(_:from:)` starts at the parent, not at the feature that raises. Receivers are asked in registration order, nearest ancestor first. A transformed event replaces the original for everyone after. It returns true only if some receiver consumed the event.
+- A spawned runtime reduces its own state and actions, uses the parent's scope unless given one, and renders under the parent's view at its name. Dismounting its feature cancels all of its work.
+- A redacted field keeps its name and shows `<withheld>` as its value. `Store.Test.Runtime` redacts both the view it expects and the view it gets before comparing.
+- `Store.Test.Runtime.finish(turns:)` yields up to the given number of turns, 1000 by default, and then fails if work is still in flight, naming the work that has a cancellation ID.
