@@ -1,4 +1,4 @@
-public import Store
+import Store
 
 extension Store.Error {
 

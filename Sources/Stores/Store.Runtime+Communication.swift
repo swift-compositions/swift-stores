@@ -1,4 +1,4 @@
-public import Algebra
+import Algebra
 public import Store
 
 extension Store.Runtime {
@@ -23,7 +23,7 @@ extension Store.Runtime {
         _ value: K.Value,
         at handle: Store.Feature.Handle
     ) throws(Store.Error) {
-        let applied = _features.update(at: handle.registry) { mount in
+        let applied: Void? = _features.update(at: handle.registry) { mount in
             mount.values.set(key, to: value)
         }
         guard applied != nil else { throw .notMounted }

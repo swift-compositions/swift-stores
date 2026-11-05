@@ -1,5 +1,7 @@
+internal import Buffer_Linear_Primitive
 internal import Dictionary
 internal import Dictionary_Ordered
+internal import Hash_Indexed_Primitive
 
 struct Ledger<Value: Sendable>: ~Copyable {
     private var storage: Dictionary::Dictionary<Ticket, Value>.Ordered

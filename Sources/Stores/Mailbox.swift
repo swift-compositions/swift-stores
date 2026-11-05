@@ -1,3 +1,4 @@
+internal import Buffer_Ring_Primitive
 internal import Deque
 internal import Queue_Primitive
 

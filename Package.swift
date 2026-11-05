@@ -47,6 +47,18 @@ let package = Package(
             branch: "main"
         ),
         .package(
+            url: "https://github.com/swift-molecules/swift-buffer-linear.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-molecules/swift-hash-table.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-molecules/swift-buffer-ring.git",
+            branch: "main"
+        ),
+        .package(
             url: "https://github.com/swift-atoms/swift-algebra.git",
             branch: "main"
         ),
@@ -74,6 +86,9 @@ let package = Package(
                     name: "Dictionary Ordered",
                     package: "swift-dictionary-ordered"
                 ),
+                .product(name: "Buffer Linear Primitive", package: "swift-buffer-linear"),
+                .product(name: "Hash Indexed Primitive", package: "swift-hash-table"),
+                .product(name: "Buffer Ring Primitive", package: "swift-buffer-ring"),
                 .product(name: "Algebra", package: "swift-algebra"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Observations", package: "swift-observations"),
