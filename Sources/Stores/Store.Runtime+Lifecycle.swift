@@ -60,6 +60,8 @@ extension Store.Runtime {
         _features.root.map(Store.Feature.Handle.init)
     }
 
+    // swift-linter:disable:next raw concept
+    // REASON: a path through the feature tree, the feature names from the root, as Store.Feature.Handle and the registry resolve it; not a file path, so File.Path does not own it, and no other type names it.
     public func feature(at path: [String]) -> Store.Feature.Handle? {
         _features.handle(at: path).map(Store.Feature.Handle.init)
     }
