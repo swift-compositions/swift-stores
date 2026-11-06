@@ -98,7 +98,7 @@ let package = Package(
         .target(
             name: "Stores Testing",
             dependencies: [
-                "Stores",
+                .target(name: "Stores"),
                 .product(name: "Store", package: "swift-store"),
                 .product(name: "Effects", package: "swift-effects"),
                 .product(name: "Clock Concurrency", package: "swift-clock", condition: .when(traits: ["StoresTesting"])),
@@ -107,16 +107,16 @@ let package = Package(
         .testTarget(
             name: "Stores Tests",
             dependencies: [
-                "Stores",
-                "Stores Testing",
+                .target(name: "Stores"),
+                .target(name: "Stores Testing"),
                 .product(name: "Algebra", package: "swift-algebra"),
             ]
         ),
         .testTarget(
             name: "Stores Testing Tests",
             dependencies: [
-                "Stores",
-                "Stores Testing",
+                .target(name: "Stores"),
+                .target(name: "Stores Testing"),
                 .product(name: "Clock Concurrency", package: "swift-clock"),
             ]
         ),
