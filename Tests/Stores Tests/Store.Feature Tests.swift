@@ -4,7 +4,9 @@ import Testing
 
 @testable import Stores
 
-extension Store.Feature {
+enum `Store.Feature Tests` {}
+
+extension `Store.Feature Tests` {
     @Suite struct Test {
         @Suite struct Unit {}
         @Suite struct `Edge Case` {}
@@ -12,7 +14,7 @@ extension Store.Feature {
     }
 }
 
-extension Store.Feature.Test {
+extension `Store.Feature Tests`.Test {
     enum Action: Sendable, Equatable {
         case increment
         case set(Int)
@@ -66,11 +68,11 @@ extension Store.Feature.Test {
     }
 }
 
-extension Store.Feature.Test.Theme {
+extension `Store.Feature Tests`.Test.Theme {
     static var initial: String { "system" }
 }
 
-extension Store.Feature.Test.Warnings {
+extension `Store.Feature Tests`.Test.Warnings {
     typealias Value = [String]
 
     static var aggregation: Algebra.Monoid<[String]> {
@@ -78,9 +80,9 @@ extension Store.Feature.Test.Warnings {
     }
 }
 
-extension Store.Feature.Test.Unit {
+extension `Store.Feature Tests`.Test.Unit {
     @Test func `sending an action advances the state`() {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         runtime.send(.increment)
         runtime.send(.increment)
         #expect(runtime.state == 2)
@@ -88,7 +90,7 @@ extension Store.Feature.Test.Unit {
 
     @Test func `an effect that only sends is folded in without leaving work in flight`() {
         let update = Store.Update<
-            Int, Store.Feature.Test.Action, Store.Work<Store.Feature.Test.Action>
+            Int, `Store.Feature Tests`.Test.Action, Store.Work<`Store.Feature Tests`.Test.Action>
         > { count, action in
             guard case .increment = action else {
                 count = 0
@@ -106,9 +108,9 @@ extension Store.Feature.Test.Unit {
     }
 }
 
-extension Store.Feature.Test.Unit {
+extension `Store.Feature Tests`.Test.Unit {
     @Test func `a mounted feature is addressable by its path`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         let detail = try runtime.mount("detail", under: root)
 
@@ -118,8 +120,8 @@ extension Store.Feature.Test.Unit {
     }
 
     @Test func `teardown runs deepest first`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
-        let order = Store.Feature.Test.Order()
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
+        let order = `Store.Feature Tests`.Test.Order()
 
         let root = try runtime.mountRoot()
         let parent = try runtime.mount("parent", under: root) { mount in
@@ -134,7 +136,7 @@ extension Store.Feature.Test.Unit {
     }
 
     @Test func `a second feature cannot take a name already mounted`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         _ = try runtime.mount("detail", under: root)
 
@@ -144,9 +146,9 @@ extension Store.Feature.Test.Unit {
     }
 }
 
-extension Store.Feature.Test.`Edge Case` {
+extension `Store.Feature Tests`.Test.`Edge Case` {
     @Test func `a handle held past a dismount resolves to nothing, not to its replacement`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
 
         let first = try runtime.mount("detail", under: root)
@@ -161,7 +163,7 @@ extension Store.Feature.Test.`Edge Case` {
     }
 
     @Test func `dismounting takes the whole subtree with it`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         let parent = try runtime.mount("parent", under: root)
         let child = try runtime.mount("child", under: parent)
@@ -173,7 +175,7 @@ extension Store.Feature.Test.`Edge Case` {
     }
 
     @Test func `dismounting twice is refused rather than silently accepted`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         let detail = try runtime.mount("detail", under: root)
 
@@ -184,118 +186,118 @@ extension Store.Feature.Test.`Edge Case` {
     }
 }
 
-extension Store.Feature.Test.Unit {
+extension `Store.Feature Tests`.Test.Unit {
     @Test func `a value resolves from the nearest ancestor that supplied one`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
-        let root = try runtime.mountRoot { $0.supply(Store.Feature.Test.Theme.self, "dark") }
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
+        let root = try runtime.mountRoot { $0.supply(`Store.Feature Tests`.Test.Theme.self, "dark") }
         let middle = try runtime.mount("middle", under: root)
         let leaf = try runtime.mount("leaf", under: middle)
 
-        #expect(runtime.value(Store.Feature.Test.Theme.self, at: leaf) == "dark")
+        #expect(runtime.value(`Store.Feature Tests`.Test.Theme.self, at: leaf) == "dark")
 
-        try runtime.supply(Store.Feature.Test.Theme.self, "high-contrast", at: middle)
-        #expect(runtime.value(Store.Feature.Test.Theme.self, at: leaf) == "high-contrast")
+        try runtime.supply(`Store.Feature Tests`.Test.Theme.self, "high-contrast", at: middle)
+        #expect(runtime.value(`Store.Feature Tests`.Test.Theme.self, at: leaf) == "high-contrast")
     }
 
     @Test func `a key with nothing supplied anywhere answers with its initial value`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
-        #expect(runtime.value(Store.Feature.Test.Theme.self, at: root) == "system")
+        #expect(runtime.value(`Store.Feature Tests`.Test.Theme.self, at: root) == "system")
     }
 
     @Test func `contributions from a subtree combine under the key's monoid`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot {
-            $0.contribute(Store.Feature.Test.Warnings.self, ["root"])
+            $0.contribute(`Store.Feature Tests`.Test.Warnings.self, ["root"])
         }
         let first = try runtime.mount("first", under: root) {
-            $0.contribute(Store.Feature.Test.Warnings.self, ["first"])
+            $0.contribute(`Store.Feature Tests`.Test.Warnings.self, ["first"])
         }
         _ = try runtime.mount("second", under: root) {
-            $0.contribute(Store.Feature.Test.Warnings.self, ["second"])
+            $0.contribute(`Store.Feature Tests`.Test.Warnings.self, ["second"])
         }
         _ = try runtime.mount("deep", under: first) {
-            $0.contribute(Store.Feature.Test.Warnings.self, ["deep"])
+            $0.contribute(`Store.Feature Tests`.Test.Warnings.self, ["deep"])
         }
 
         #expect(
-            runtime.aggregate(Store.Feature.Test.Warnings.self, from: root)
+            runtime.aggregate(`Store.Feature Tests`.Test.Warnings.self, from: root)
                 == ["root", "first", "second", "deep"]
         )
     }
 
     @Test func `aggregating with no contributors is the monoid identity`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
-        #expect(runtime.aggregate(Store.Feature.Test.Warnings.self, from: root) == [])
+        #expect(runtime.aggregate(`Store.Feature Tests`.Test.Warnings.self, from: root) == [])
     }
 }
 
-extension Store.Feature.Test.Integration {
+extension `Store.Feature Tests`.Test.Integration {
     @Test func `an event bubbles until an ancestor consumes it`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
-        let order = Store.Feature.Test.Order()
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
+        let order = `Store.Feature Tests`.Test.Order()
 
         let root = try runtime.mountRoot { mount in
-            mount.on(Store.Feature.Test.Saved.self) { _ in
+            mount.on(`Store.Feature Tests`.Test.Saved.self) { _ in
                 order.record("root")
                 return .consumed
             }
         }
         let middle = try runtime.mount("middle", under: root) { mount in
-            mount.on(Store.Feature.Test.Saved.self) { _ in
+            mount.on(`Store.Feature Tests`.Test.Saved.self) { _ in
                 order.record("middle")
                 return .ignored
             }
         }
         let leaf = try runtime.mount("leaf", under: middle)
 
-        #expect(runtime.raise(Store.Feature.Test.Saved(id: 7), from: leaf))
+        #expect(runtime.raise(`Store.Feature Tests`.Test.Saved(id: 7), from: leaf))
         #expect(order.recorded == ["middle", "root"])
     }
 
     @Test func `an ancestor may transform an event into a different one`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
-        let seen = Store.Feature.Test.Order()
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
+        let seen = `Store.Feature Tests`.Test.Order()
 
         let root = try runtime.mountRoot { mount in
-            mount.on(Store.Feature.Test.Refresh.self) { refresh in
+            mount.on(`Store.Feature Tests`.Test.Refresh.self) { refresh in
                 seen.record("refresh(\(refresh.id))")
                 return .consumed
             }
         }
         let middle = try runtime.mount("middle", under: root) { mount in
-            mount.on(Store.Feature.Test.Saved.self) { saved in
-                .transformed(Store.Feature.Test.Refresh(id: saved.id))
+            mount.on(`Store.Feature Tests`.Test.Saved.self) { saved in
+                .transformed(`Store.Feature Tests`.Test.Refresh(id: saved.id))
             }
         }
         let leaf = try runtime.mount("leaf", under: middle)
 
-        #expect(runtime.raise(Store.Feature.Test.Saved(id: 7), from: leaf))
+        #expect(runtime.raise(`Store.Feature Tests`.Test.Saved(id: 7), from: leaf))
         #expect(seen.recorded == ["refresh(7)"])
     }
 
     @Test func `an event nobody consumes reports that it was not consumed`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         let leaf = try runtime.mount("leaf", under: root)
 
-        #expect(!runtime.raise(Store.Feature.Test.Saved(id: 7), from: leaf))
+        #expect(!runtime.raise(`Store.Feature Tests`.Test.Saved(id: 7), from: leaf))
     }
 }
 
-extension Store.Feature.Test.Integration {
+extension `Store.Feature Tests`.Test.Integration {
     @Test func `a spawned subtree reduces its own actions and the parent's state is untouched`()
         throws
     {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
 
         let child = try runtime.spawn(
             "child",
             under: root,
             state: 0,
-            update: Store.Feature.Test.counting
+            update: `Store.Feature Tests`.Test.counting
         )
 
         child.send(.increment)
@@ -306,14 +308,14 @@ extension Store.Feature.Test.Integration {
     }
 
     @Test func `dismounting the parent feature stops the spawned subtree's work`() async throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
 
         let child = try runtime.spawn(
             "child",
             under: root,
             state: 0,
-            update: Store.Feature.Test.counting
+            update: `Store.Feature Tests`.Test.counting
         )
 
         child.send(.loadSlowly)
@@ -324,7 +326,7 @@ extension Store.Feature.Test.Integration {
     }
 }
 
-extension Store.Feature.Test.Unit {
+extension `Store.Feature Tests`.Test.Unit {
     @Test func `a redacted field keeps its name and loses its value`() {
         let node = Store.View.Node(
             fields: [.init("count", "1"), .init("loadedAt", "12:00")]
@@ -339,8 +341,8 @@ extension Store.Feature.Test.Unit {
     @Test func `a spawned subtree renders under the parent's view`() throws {
         let runtime = Store.Runtime(
             state: 0,
-            update: Store.Feature.Test.counting,
-            projection: Store.Feature.Test.view
+            update: `Store.Feature Tests`.Test.counting,
+            projection: `Store.Feature Tests`.Test.view
         )
         let root = try runtime.mountRoot()
 
@@ -348,8 +350,8 @@ extension Store.Feature.Test.Unit {
             "child",
             under: root,
             state: 0,
-            update: Store.Feature.Test.counting,
-            projection: Store.Feature.Test.view
+            update: `Store.Feature Tests`.Test.counting,
+            projection: `Store.Feature Tests`.Test.view
         )
         child.send(.increment)
 
@@ -360,14 +362,14 @@ extension Store.Feature.Test.Unit {
     }
 }
 
-extension Store.Feature.Test {
+extension `Store.Feature Tests`.Test {
 
     final class Order: @unchecked Sendable {
         private let lock = Mutex<[String]>([])
     }
 }
 
-extension Store.Feature.Test.Order {
+extension `Store.Feature Tests`.Test.Order {
     func record(_ entry: String) {
         lock.withLock { $0.append(entry) }
     }
@@ -377,17 +379,17 @@ extension Store.Feature.Test.Order {
     }
 }
 
-extension Store.Feature.Test.`Edge Case` {
+extension `Store.Feature Tests`.Test.`Edge Case` {
     @Test func `supplying through a handle held past a dismount is refused and does not reach the replacement`() throws {
-        let runtime = Store.Runtime(state: 0, update: Store.Feature.Test.counting)
+        let runtime = Store.Runtime(state: 0, update: `Store.Feature Tests`.Test.counting)
         let root = try runtime.mountRoot()
         let first = try runtime.mount("detail", under: root)
         try runtime.dismount(first)
         let second = try runtime.mount("detail", under: root)
 
         #expect(throws: Store.Error.notMounted) {
-            try runtime.supply(Store.Feature.Test.Theme.self, "dark", at: first)
+            try runtime.supply(`Store.Feature Tests`.Test.Theme.self, "dark", at: first)
         }
-        #expect(runtime.value(Store.Feature.Test.Theme.self, at: second) == "system")
+        #expect(runtime.value(`Store.Feature Tests`.Test.Theme.self, at: second) == "system")
     }
 }

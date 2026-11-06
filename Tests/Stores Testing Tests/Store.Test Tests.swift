@@ -3,7 +3,9 @@ import Testing
 
 @testable import Stores_Testing
 
-extension Store.Test {
+enum `Store.Test Tests` {}
+
+extension `Store.Test Tests` {
     @Suite struct Suites {
         @Suite struct Unit {}
         @Suite struct `Edge Case` {}
@@ -11,7 +13,7 @@ extension Store.Test {
     }
 }
 
-extension Store.Test.Suites {
+extension `Store.Test Tests`.Suites {
     enum Action: Sendable, Equatable {
         case increment
         case set(Int)
@@ -64,14 +66,14 @@ extension Store.Test.Suites {
     }
 }
 
-extension Store.Test.Suites.Unit {
+extension `Store.Test Tests`.Suites.Unit {
     @Test func `a step that states the right view passes`() throws {
-        let store = Store.Test.Suites.store()
+        let store = `Store.Test Tests`.Suites.store()
         try store.send(.increment, becoming: .init(fields: [.init("count", "1")]))
     }
 
     @Test func `a step that states the wrong view fails, and names both`() {
-        let store = Store.Test.Suites.store()
+        let store = `Store.Test Tests`.Suites.store()
 
         #expect {
             try store.send(.increment, becoming: .init(fields: [.init("count", "9")]))
@@ -85,22 +87,22 @@ extension Store.Test.Suites.Unit {
     }
 
     @Test func `a withheld field cannot make a step fail`() throws {
-        let store = Store.Test.Suites.store(redacting: .withholding("count"))
+        let store = `Store.Test Tests`.Suites.store(redacting: .withholding("count"))
 
         try store.send(.increment, becoming: .init(fields: [.init("count", "anything")]))
     }
 }
 
-extension Store.Test.Suites.Integration {
+extension `Store.Test Tests`.Suites.Integration {
     @Test func `finishing succeeds once work has fed its result back`() async throws {
-        let store = Store.Test.Suites.store()
+        let store = `Store.Test Tests`.Suites.store()
         store.store.send(.load)
         try await store.finish()
         try store.require(.init(fields: [.init("count", "41")]))
     }
 
     @Test func `finishing fails while work is still in flight, and names it`() async {
-        let store = Store.Test.Suites.store()
+        let store = `Store.Test Tests`.Suites.store()
         store.store.send(.linger)
 
         await #expect {
@@ -114,7 +116,7 @@ extension Store.Test.Suites.Integration {
     }
 
     @Test func `cancelling in-flight work lets the test finish`() async throws {
-        let store = Store.Test.Suites.store()
+        let store = `Store.Test Tests`.Suites.store()
         store.store.send(.linger)
         store.store.cancel("linger")
         try await store.finish()
