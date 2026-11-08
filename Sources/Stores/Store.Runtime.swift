@@ -1,7 +1,7 @@
-public import Observations
-public import Store
 import Algebra
 internal import Effects
+public import Observations
+public import Store
 
 extension Store {
 
