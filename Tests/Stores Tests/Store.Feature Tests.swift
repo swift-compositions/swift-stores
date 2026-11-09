@@ -15,6 +15,13 @@ extension `Store.Feature Tests` {
 }
 
 extension `Store.Feature Tests`.Test {
+    /// Waits until the run is cancelled.
+    static func sleepUntilCancelled() async {
+        // swift-linter:disable:next try optional
+        // REASON: Task.sleep(for:) throws untyped, and its only error here is the CancellationError these runs wait for.
+        try? await Task.sleep(for: .seconds(60))
+    }
+
     enum Action: Sendable, Equatable {
         case increment
         case set(Int)
@@ -391,5 +398,70 @@ extension `Store.Feature Tests`.Test.`Edge Case` {
             try runtime.supply(`Store.Feature Tests`.Test.Theme.self, "dark", at: first)
         }
         #expect(runtime.value(`Store.Feature Tests`.Test.Theme.self, at: second) == "system")
+    }
+}
+
+extension `Store.Feature Tests`.Test.Integration {
+    @Test func `runs nested in a merge keep their cancellation ids`() {
+        let update = Store.Update<
+            Int, `Store.Feature Tests`.Test.Action, Store.Work<`Store.Feature Tests`.Test.Action>
+        > { _, _ in
+            .merge([
+                .run(Store.Work(cancellation: "first") { _ in await `Store.Feature Tests`.Test.sleepUntilCancelled() }),
+                .run(Store.Work(cancellation: "second") { _ in await `Store.Feature Tests`.Test.sleepUntilCancelled() }),
+            ])
+        }
+
+        let runtime = Store.Runtime(state: 0, update: update)
+        runtime.send(.load)
+        #expect(Set(runtime.inFlight) == ["first", "second"])
+
+        runtime.cancel("first")
+        #expect(runtime.inFlight == ["second"])
+
+        runtime.cancelAll()
+        #expect(runtime.isSettled)
+    }
+
+    @MainActor
+    @Test func `a run nested in a sequence is listed and cancelled by its id, and the sequence goes on`() async {
+        let update = Store.Update<
+            Int, `Store.Feature Tests`.Test.Action, Store.Work<`Store.Feature Tests`.Test.Action>
+        > { count, action in
+            switch action {
+            case .load:
+                return .sequence([
+                    .run(Store.Work(cancellation: "slow") { _ in await `Store.Feature Tests`.Test.sleepUntilCancelled() }),
+                    .send(.set(7)),
+                ])
+
+            case .set(let value):
+                count = value
+                return .none
+
+            case .increment, .loadSlowly:
+                return .none
+            }
+        }
+
+        let runtime = Store.Runtime(state: 0, update: update)
+        runtime.send(.load)
+
+        var attempts = 0
+        while !runtime.inFlight.contains("slow"), attempts < 10_000 {
+            attempts += 1
+            await Task.yield()
+        }
+        #expect(runtime.inFlight == ["slow"])
+
+        runtime.cancel("slow")
+
+        attempts = 0
+        while !runtime.isSettled, attempts < 10_000 {
+            attempts += 1
+            await Task.yield()
+        }
+        #expect(runtime.state == 7)
+        #expect(runtime.isSettled)
     }
 }

@@ -229,23 +229,36 @@ extension Store.Runtime {
         }
     }
 
-    private func start(_ effect: Store.Effect<Action, Store.Work<Action>>) {
-        let ticket = mintTicket()
-        let send = sender()
-        let cancellation = Self.cancellation(of: effect)
+    @discardableResult
+    private func start(_ effect: Store.Effect<Action, Store.Work<Action>>) -> [Task<Void, Never>] {
+        switch effect {
+        case .none:
+            return []
 
-        let task = Task { [weak self] in
-            await Self.execute(effect, send: send)
-            guard let self else { return }
-            await retire(ticket, isolation: isolation)
+        case .merge(let effects):
+            return effects.flatMap { start($0) }
+
+        case .send, .run, .sequence:
+            let ticket = mintTicket()
+            let send = sender()
+            let launch = launcher()
+            let cancellation = Self.cancellation(of: effect)
+
+            let task = Task { [weak self] in
+                await Self.execute(effect, send: send, launch: launch)
+                guard let self else { return }
+                await retire(ticket, isolation: isolation)
+            }
+
+            _inFlight.record(.init(cancellation: cancellation, task: task), as: ticket)
+            return [task]
         }
-
-        _inFlight.record(.init(cancellation: cancellation, task: task), as: ticket)
     }
 
     private static func execute(
         _ effect: Store.Effect<Action, Store.Work<Action>>,
-        send: Store.Send<Action>
+        send: Store.Send<Action>,
+        launch: @escaping @Sendable (Store.Effect<Action, Store.Work<Action>>) async -> [Task<Void, Never>]
     ) async {
         switch effect {
         case .none:
@@ -259,16 +272,31 @@ extension Store.Runtime {
 
             await Effects.Effect.perform(Store.Job { await body(send) })
 
-        case .merge(let effects):
-            await withTaskGroup(of: Void.self) { group in
-                for effect in effects {
-                    group.addTask { await Self.execute(effect, send: send) }
-                }
-            }
+        case .merge:
+            await join(await launch(effect))
 
         case .sequence(let effects):
-            for effect in effects {
-                await Self.execute(effect, send: send)
+            for step in effects {
+                guard !Task.isCancelled else { return }
+                switch step {
+                case .none, .send:
+                    await execute(step, send: send, launch: launch)
+
+                case .run, .merge, .sequence:
+                    await join(await launch(step))
+                }
+            }
+        }
+    }
+
+    private static func join(_ tasks: [Task<Void, Never>]) async {
+        await withTaskCancellationHandler {
+            for task in tasks {
+                await task.value
+            }
+        } onCancel: {
+            for task in tasks {
+                task.cancel()
             }
         }
     }
@@ -292,6 +320,21 @@ extension Store.Runtime {
 
     private func accept(_ action: Action, isolation: isolated (any Actor)?) async {
         send(action)
+    }
+
+    func launcher() -> @Sendable (Store.Effect<Action, Store.Work<Action>>) async -> [Task<Void, Never>] {
+        { [weak self] effect in
+            guard let self else { return [] }
+            guard let isolation else { return start(effect) }
+            return await launch(effect, on: isolation)
+        }
+    }
+
+    private func launch<Isolation: Actor>(
+        _ effect: Store.Effect<Action, Store.Work<Action>>,
+        on isolation: isolated Isolation
+    ) async -> [Task<Void, Never>] {
+        start(effect)
     }
 
     private func retire(_ ticket: UInt64, isolation: isolated (any Actor)?) async {
