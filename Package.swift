@@ -69,6 +69,7 @@ let package = Package(
             branch: "main"
         ),
         .package(url: "https://github.com/swift-atoms/swift-clock.git", branch: "main"),
+        .package(url: "https://github.com/swift-molecules/swift-memory-allocation.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -90,6 +91,7 @@ let package = Package(
                 .product(name: "Effect", package: "swift-effect"),
                 .product(name: "Observer", package: "swift-observer"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Memory Allocator Protocol", package: "swift-memory-allocation"),
             ]
         ),
         .target(

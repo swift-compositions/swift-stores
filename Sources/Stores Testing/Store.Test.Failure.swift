@@ -24,7 +24,7 @@
                     """
 
             case .unfinishedWork(let names):
-                let listed = names.map(\.name).joined(separator: ", ")
+                let listed = names.map { $0.name }.joined(separator: ", ")
                 return "work was still in flight when the test finished: \(listed)"
 
             case .neverSettled:

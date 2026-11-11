@@ -125,7 +125,7 @@ extension Registry.Mounts {
         while !frontier.isEmpty {
             let current = frontier.removeFirst()
             result.append(current)
-            frontier.append(contentsOf: children(of: current).map(\.handle))
+            frontier.append(contentsOf: children(of: current).map { $0.handle })
         }
         return result
     }

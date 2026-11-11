@@ -244,10 +244,10 @@ extension Store.Runtime {
             let launch = launcher()
             let cancellation = Self.cancellation(of: effect)
 
-            let task = Task { [weak self] in
+            let task = Task { [anchor = Anchor(self)] in
                 await Self.execute(effect, send: send, launch: launch)
-                guard let self else { return }
-                await retire(ticket, isolation: isolation)
+                guard let runtime = anchor.runtime else { return }
+                await runtime.retire(ticket, isolation: runtime.isolation)
             }
 
             _inFlight.record(.init(cancellation: cancellation, task: task), as: ticket)
@@ -312,9 +312,9 @@ extension Store.Runtime {
 extension Store.Runtime {
 
     func sender() -> Store.Send<Action> {
-        Store.Send { [weak self] action in
-            guard let self else { return }
-            await accept(action, isolation: isolation)
+        Store.Send { [anchor = Anchor(self)] action in
+            guard let runtime = anchor.runtime else { return }
+            await runtime.accept(action, isolation: runtime.isolation)
         }
     }
 
@@ -323,10 +323,10 @@ extension Store.Runtime {
     }
 
     func launcher() -> @Sendable (Store.Effect<Action, Store.Work<Action>>) async -> [Task<Void, Never>] {
-        { [weak self] effect in
-            guard let self else { return [] }
-            guard let isolation else { return start(effect) }
-            return await launch(effect, on: isolation)
+        { [anchor = Anchor(self)] effect in
+            guard let runtime = anchor.runtime else { return [] }
+            guard let isolation = runtime.isolation else { return runtime.start(effect) }
+            return await runtime.launch(effect, on: isolation)
         }
     }
 

@@ -1,5 +1,6 @@
 internal import Buffer_Ring_Primitive
 internal import Deque
+internal import Memory_Allocator_Protocol
 internal import Queue_Primitive
 
 struct Mailbox<Element: Sendable>: ~Copyable {
