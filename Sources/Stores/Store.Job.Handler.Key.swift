@@ -1,9 +1,9 @@
-public import Effects
+public import Effect
 public import Store
 
 extension Store.Job.Handler {
 
-    public struct Key: Dependency.Key {}
+    public struct Key: Effect::Effect.Context.Key {}
 }
 
 extension Store.Job.Handler.Key {

@@ -1,9 +1,9 @@
-public import Effects
+public import Effect
 public import Store
 
 extension Store {
 
-    public struct Job: Effects.Effect.`Protocol`, EffectWithHandler, Sendable {
+    public struct Job: Effect::Effect.`Protocol`, Effect::Effect.Handled, Sendable {
 
         public let body: @Sendable () async -> Void
 

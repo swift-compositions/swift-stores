@@ -62,7 +62,7 @@ let package = Package(
             url: "https://github.com/swift-atoms/swift-algebra.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-compositions/swift-effects.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-effect.git", branch: "main", traits: ["Dependency"]),
         .package(
             url: "https://github.com/swift-compositions/swift-observations.git",
             branch: "main"
@@ -90,7 +90,7 @@ let package = Package(
                 .product(name: "Hash Indexed Primitive", package: "swift-hash-table"),
                 .product(name: "Buffer Ring Primitive", package: "swift-buffer-ring"),
                 .product(name: "Algebra", package: "swift-algebra"),
-                .product(name: "Effects", package: "swift-effects"),
+                .product(name: "Effect", package: "swift-effect"),
                 .product(name: "Observations", package: "swift-observations"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
@@ -100,7 +100,7 @@ let package = Package(
             dependencies: [
                 .target(name: "Stores"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Effects", package: "swift-effects"),
+                .product(name: "Effect", package: "swift-effect"),
                 .product(name: "Clock Concurrency", package: "swift-clock", condition: .when(traits: ["StoresTesting"])),
             ]
         ),

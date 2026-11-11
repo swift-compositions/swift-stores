@@ -1,9 +1,9 @@
-public import Effects
+public import Effect
 public import Store
 
 extension Store.Job {
 
-    public struct Handler: Effects.Effect.Handler.`Protocol`, Sendable {
+    public struct Handler: Effect::Effect.Handler.`Protocol`, Sendable {
         let run: @Sendable (@escaping @Sendable () async -> Void) async -> Void
 
         public init(_ run: @escaping @Sendable (@escaping @Sendable () async -> Void) async -> Void) {
@@ -17,7 +17,7 @@ extension Store.Job.Handler {
 
     public func handle(
         _ effect: borrowing Store.Job,
-        continuation: consuming Effects.Effect.Continuation.One<Void, Never>
+        continuation: consuming Effect::Effect.Continuation.One<Void, Never>
     ) async {
         let body = effect.body
         await run(body)

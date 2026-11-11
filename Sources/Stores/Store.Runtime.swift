@@ -1,5 +1,5 @@
 import Algebra
-internal import Effects
+internal import Effect
 public import Observations
 public import Store
 
@@ -270,7 +270,7 @@ extension Store.Runtime {
         case .run(let work):
             let body = work.body
 
-            await Effects.Effect.perform(Store.Job { await body(send) })
+            await Effect::Effect.perform(Store.Job { await body(send) })
 
         case .merge:
             await join(await launch(effect))
