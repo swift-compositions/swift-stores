@@ -63,10 +63,7 @@ let package = Package(
             branch: "main"
         ),
         .package(url: "https://github.com/swift-atoms/swift-effect.git", branch: "main", traits: ["Dependency"]),
-        .package(
-            url: "https://github.com/swift-compositions/swift-observations.git",
-            branch: "main"
-        ),
+        .package(url: "https://github.com/swift-atoms/swift-observer.git", branch: "main", traits: ["Tracking"]),
         .package(
             url: "https://github.com/swift-compositions/swift-dependencies.git",
             branch: "main"
@@ -91,7 +88,7 @@ let package = Package(
                 .product(name: "Buffer Ring Primitive", package: "swift-buffer-ring"),
                 .product(name: "Algebra", package: "swift-algebra"),
                 .product(name: "Effect", package: "swift-effect"),
-                .product(name: "Observations", package: "swift-observations"),
+                .product(name: "Observer", package: "swift-observer"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),

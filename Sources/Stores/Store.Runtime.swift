@@ -1,6 +1,6 @@
 import Algebra
 internal import Effect
-public import Observations
+public import Observer
 public import Store
 
 extension Store {
