@@ -465,3 +465,44 @@ extension `Store.Feature Tests`.Test.Integration {
         #expect(runtime.isSettled)
     }
 }
+
+extension `Store.Feature Tests`.Test.Integration {
+    @Test func `a runtime with work in flight lives until the work ends`() async {
+        let order = `Store.Feature Tests`.Test.Order()
+        let (started, starting) = AsyncStream<Void>.makeStream()
+        let (released, releasing) = AsyncStream<Void>.makeStream()
+        let (finished, finishing) = AsyncStream<Void>.makeStream()
+        let update = Store.Update<
+            Int, `Store.Feature Tests`.Test.Action, Store.Work<`Store.Feature Tests`.Test.Action>
+        > { count, action in
+            switch action {
+            case .load:
+                return .run(
+                    Store.Work(cancellation: "held") { send in
+                        starting.yield()
+                        for await _ in released { break }
+                        await send(.set(41))
+                        finishing.yield()
+                    }
+                )
+
+            case .set(let value):
+                count = value
+                order.record("set \(value)")
+                return .none
+
+            case .increment, .loadSlowly:
+                return .none
+            }
+        }
+
+        var runtime: Store.Runtime? = Store.Runtime(state: 0, update: update)
+        runtime?.send(.load)
+        for await _ in started { break }
+        runtime = nil
+        releasing.yield()
+        for await _ in finished { break }
+
+        #expect(order.recorded == ["set 41"])
+    }
+}
